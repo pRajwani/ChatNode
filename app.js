@@ -17,6 +17,7 @@ var key= fs.readFileSync(__dirname + "/bin/65623539_localhost3443.key")
 var cert= fs.readFileSync(__dirname + "/bin/65623539_localhost3443.cert")
 var https = require('https')
 var bodyParser = require('body-parser')
+var Message = require('./models/Messages')
 
 var app = express();
 app.use(cors())
@@ -41,13 +42,18 @@ server.listen(3443,()=>{console.log('connected')})
 //app.options('*',cors())
 const io = require('socket.io').listen(server)
 
-io.on('connection', (socket) => { 
-  console.log("user connected");
+  io.on('connection', (socket) => { 
+    console.log("user connected");
+    var newUser ='New User Connected'
+    socket.send(newUser)
 
-
-socket.on('new-msg', (message) => {
-  socket.broadcast.emit('new-msg',message);
-});
+  socket.on('new-msg', (message) => {
+    console.log(message)
+    Message.create({sender:message.sender,message:message.message})
+    .then(()=>{
+      socket.broadcast.emit('new-msg',message);
+    })
+  });
 })
 
 // view engine setup
@@ -73,7 +79,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/messages', messsageRouter);
+app.use('/message', messsageRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -16,7 +16,7 @@ router.post('/checkCode', (req,res,next)=> {
 });
 
 router.post('/localLogin',passport.authenticate('local'), (req,res,next) => {
-  res.json({success:true})
+  res.json({success:true, user:req.user.name})
 })
 
 function isLoggedIn(req, res, next) {

@@ -7,16 +7,21 @@ var mongoose = require("mongoose");
 const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
+var bodyParser = require("body-parser");
+
 var indexRouter = require("./routes/login");
 var usersRouter = require("./routes/users");
 var messsageRouter = require("./routes/message");
+var signupRouter = require("./routes/signup");
+
 var db = require("./db");
 var fblogin = require("./fblogin");
+
 var fs = require("fs");
 var key = fs.readFileSync(__dirname + "/bin/65623539_localhost3443.key");
 var cert = fs.readFileSync(__dirname + "/bin/65623539_localhost3443.cert");
 var https = require("https");
-var bodyParser = require("body-parser");
+
 var Message = require("./models/Messages");
 
 var app = express();
@@ -48,12 +53,10 @@ server.listen(3443, () => {
 const io = require("socket.io").listen(server);
 
 io.on("connection", (socket) => {
-  console.log("user connected");
   var newUser = "New User Connected";
   socket.broadcast.emit("notification", newUser);
 
   socket.on("new-msg", (message) => {
-    console.log(message);
     Message.create({ sender: message.sender, message: message.message }).then(
       () => {
         socket.broadcast.emit("new-msg", message);
@@ -87,6 +90,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/message", messsageRouter);
+app.use("/signup", signupRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

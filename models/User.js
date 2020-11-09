@@ -12,8 +12,7 @@ var UserSchema = new Schema({
     },
     email:{
         type:String
-    },
-    username: String
+    }
 });
 
 UserSchema.plugin(passportlocalmongoose);

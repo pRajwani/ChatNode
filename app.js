@@ -13,6 +13,7 @@ var indexRouter = require("./routes/login");
 var usersRouter = require("./routes/users");
 var messsageRouter = require("./routes/message");
 var signupRouter = require("./routes/signup");
+var roomRouter = require("./routes/room");
 
 var db = require("./db");
 var fblogin = require("./fblogin");
@@ -23,6 +24,7 @@ var cert = fs.readFileSync(__dirname + "/bin/65623539_localhost3443.cert");
 var https = require("https");
 
 var Message = require("./models/Messages");
+const User = require("./models/User");
 
 var app = express();
 app.use(cors());
@@ -57,11 +59,15 @@ io.on("connection", (socket) => {
   socket.broadcast.emit("notification", newUser);
 
   socket.on("new-msg", (message) => {
-    Message.create({ sender: message.sender, message: message.message }).then(
-      () => {
-        socket.broadcast.emit("new-msg", message);
-      }
-    );
+    Message.create(message).then(() => {
+      socket.broadcast.to(message.roomId).emit("new-msg", message);
+    });
+  });
+
+  socket.on("joinRoom", (rooms) => {
+    rooms.forEach((room) => {
+      socket.join(room._id);
+    });
   });
 });
 
@@ -91,6 +97,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/message", messsageRouter);
 app.use("/signup", signupRouter);
+app.use("/room", roomRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -8,6 +8,7 @@ const passport = require("passport");
 const session = require("express-session");
 const cors = require("cors");
 var bodyParser = require("body-parser");
+var cookieParser = require("cookie-parser");
 
 var indexRouter = require("./routes/login");
 var usersRouter = require("./routes/users");
@@ -38,6 +39,7 @@ app.use((req, res, next) => {
   next();
 });
 app.use(express.json());
+app.use(cookieParser());
 
 var server = https.createServer({ key: key, cert: cert }, app);
 server.listen(3443, () => {

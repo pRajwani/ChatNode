@@ -17,11 +17,14 @@ router.get(
 
 router.post("/checkCode", (req, res, next) => {
   resp = checkCode(req.body.code, code);
-  res.json({ resp: resp, user: user });
+  console.log(req.body.code, code);
+  res.json({ resp: resp, user: user }); 
 });
 
 router.post("/localLogin", passport.authenticate("local"), (req, res, next) => {
-  res.json({ success: true, user: req.user.name });
+  code = 1;
+  user = req.user;
+  res.json({ success: true, code: 1 });
 });
 
 function isLoggedIn(req, res, next) {

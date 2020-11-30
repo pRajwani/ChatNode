@@ -28,16 +28,21 @@ var Message = require("./models/Messages");
 const User = require("./models/User");
 
 var app = express();
-app.use(cors());
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Header", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "POST,GET,DELETE,PUT,OPTIONS,PATCH"
-  );
-  next();
-});
+var corsOptions = {
+  origin: 'http://localhost:4200',
+  credentials: true
+}
+app.use(cors(corsOptions));
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
+//   res.setHeader("Access-Control-Allow-Headers", "authorization");
+//   res.setHeader("Access-Control-Allow-Credentials", "true");
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "POST,GET,DELETE,PUT,OPTIONS,PATCH"
+//   );
+//   next();
+// });
 app.use(express.json());
 app.use(cookieParser());
 

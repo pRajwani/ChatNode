@@ -15,7 +15,7 @@ router.post("/getRooms", async (req, res, next) => {
   }
 });
 
-router.post("/getUserDetails", async (req, res, next) => {
+router.get("/getUserDetails", async (req, res, next) => {
   try {
     resp = await verifyAccessToken(req.headers.authorization.split(" ")[1]);
     userDetail = await User.findById(resp._id);

@@ -9,9 +9,15 @@ exports.createRefreshToken = (user) => {
 };
 
 exports.verifyAccessToken = (token) => {
+  
   return jwt.verify(token, "secret");
 };
 
 exports.verifyRefreshToken = (token) => {
-  return jwt.verify(token, "RefreshSecret");
+  return jwt.verify(token, "RefreshSecret", (err, result)=>{
+    if(err!=null){
+      return {verify:false};
+    }
+    else return {result:result.user, verify: true};
+  });
 };

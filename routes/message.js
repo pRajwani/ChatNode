@@ -10,7 +10,6 @@ router.post("/", function (req, res, next) {
     .populate("sender", "name")
     .populate("reciever", "name")
     .then((messages) => {
-      console.log("messages", messages);
       res.json(messages);
     });
 });

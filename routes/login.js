@@ -19,39 +19,37 @@ router.get(
     };
     aToken = createAccessToken(user);
     rToken = createRefreshToken(user);
-    res.cookie("rTok", rToken);
-    res.redirect(`http://localhost:4200/login?atok=${aToken}`);
+    res.cookie("rTok", rToken, {httpOnly:true});
+    res.redirect(`http://localhost:4200/chat?atok=${aToken}`);
   }
 );
 
-router.post("/checkCode", (req, res, next) => {
-<<<<<<< HEAD
-  resp = checkCode(req.body.code, code);
-  console.log(req.body.code, code);
-  res.json({ resp: resp, user: user }); 
-});
-
-router.post("/localLogin", passport.authenticate("local"), (req, res, next) => {
-  code = 1;
-  user = req.user;
-  res.json({ success: true, code: 1 });
-=======
+router.get("/checkCode", (req, res, next) => {
   rToken = req.cookies["rTok"];
+  console.log("checkCode rT:", rToken);
   resp = verifyRefreshToken(rToken);
-  // if(resp!=null)
-  //   aTok=createAccessToken
-  res.json(resp);
+  console.log("verify Rt resp", resp)
+  if(resp.verify==true) {
+   aTok=createAccessToken(resp.result);
+   rTok=createRefreshToken(resp.result);
+   res.cookie('rTok', rTok, {httpOnly:true});
+   res.json({result: aTok});
+  }
+  else{
+  res.cookie("rTok","");
+  res.json({result: "Refresh Token Malformed", status:false});
+  }
 });
 
 router.post("/localLogin", passport.authenticate("local"), (req, res, next) => {
   user = {
     _id: req.user._id,
   };
+  console.log(user)
   aToken = createAccessToken(user);
   rToken = createRefreshToken(user);
-  res.cookie("rTok", rToken);
+  res.cookie("rTok", rToken, {httpOnly: true});
   res.json(aToken);
->>>>>>> 17ba19b8980a6fa375c5605bf63218d3e998fc81
 });
 
 module.exports = router;

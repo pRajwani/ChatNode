@@ -39,7 +39,7 @@ router.get("/checkCode", (req, res, next) => {
   res.cookie("rTok","");
   res.json({result: "Refresh Token Malformed", status:false});
   }
-});
+}); 
 
 router.post("/localLogin", passport.authenticate("local"), (req, res, next) => {
   user = {

@@ -26,6 +26,9 @@ var https = require("https");
 
 var Message = require("./models/Messages");
 const User = require("./models/User");
+const { findUserByUsername } = require("./services/findUser");
+const { CreateRoom } = require('./services/createRoom');
+const { pushNewRoom } = require("./services/pushNewRoom");
 
 var app = express();
 var corsOptions = {
@@ -33,16 +36,6 @@ var corsOptions = {
   credentials: true
 }
 app.use(cors(corsOptions));
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
-//   res.setHeader("Access-Control-Allow-Headers", "authorization");
-//   res.setHeader("Access-Control-Allow-Credentials", "true");
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "POST,GET,DELETE,PUT,OPTIONS,PATCH"
-//   );
-//   next();
-// });
 app.use(express.json());
 app.use(cookieParser());
 
@@ -64,6 +57,19 @@ const io = require("socket.io").listen(server);
 io.on("connection", (socket) => {
   var newUser = "New User Connected";
   socket.broadcast.emit("notification", newUser);
+
+  socket.on('Rooms', (userId) => {
+    socket.join(userId);
+  })
+
+  socket.on('newChatRoom', (room) => {
+    console.log(room);
+    findUserByUsername(room);
+    
+    // createdRoom.participants.forEach(participant => {
+    //   socket.broadcast.to(participant).emit('newRoomAddition', room);
+    // });
+  })
 
   socket.on("new-msg", (message) => {
     Message.create(message).then(() => {
